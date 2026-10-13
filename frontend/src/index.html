@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Музыкальный каталог — Вариант 14</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Музыкальный каталог</h1>
+    <p>Docker Compose · Вариант 14 · Пользовательские плейлисты</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Кнопка 1 — Плейлисты из базы данных</h2>
+      <p class="hint">Запрос данных из внутренней БД через Backend.</p>
+      <div class="row">
+        <button id="btnPlaylists" class="primary">Загрузить плейлисты из БД</button>
+      </div>
+
+      <form id="playlistForm" class="row">
+        <input id="newPlaylistName" placeholder="Название плейлиста" required>
+        <input id="newPlaylistDesc" placeholder="Описание (необязательно)">
+        <button type="submit">Создать плейлист</button>
+      </form>
+
+      <div id="playlists" class="list"></div>
+    </section>
+
+    <section class="card">
+      <h2>Кнопка 2 — Поиск треков и исполнителей</h2>
+      <p class="hint">Запрос данных от Web-сервиса (вариант 14) через Backend.</p>
+      <div class="row">
+        <input id="searchQuery" placeholder="Например: Queen, rock, Nirvana">
+        <button id="btnSearch" class="primary">Найти треки</button>
+      </div>
+      <div id="searchResults" class="list"></div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>

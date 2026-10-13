@@ -1,0 +1,64 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: music_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - appnet
+
+  web-service:
+    build: ./web-service
+    container_name: music_web_service
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8080/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - appnet
+
+  backend:
+    build: ./backend
+    container_name: music_backend
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      WEB_SERVICE_URL: http://web-service:8080
+    depends_on:
+      db:
+        condition: service_healthy
+      web-service:
+        condition: service_started
+    networks:
+      - appnet
+
+  frontend:
+    build: ./frontend
+    container_name: music_frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - appnet
+
+volumes:
+  pgdata:
+
+networks:
+  appnet:
+    driver: bridge
